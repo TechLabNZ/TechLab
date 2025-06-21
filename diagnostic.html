@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diagnostic Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7C3AED;
+            --secondary-color: #3B82F6;
+            --accent-color: #F59E0B;
+            --dark-bg: #0F172A;
+            --darker-bg: #020617;
+            --light-bg: #1E293B;
+            --text-color: #F8FAFC;
+            --text-muted: #94A3B8;
+            --gradient-1: linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%);
+            --gradient-2: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .premium-text {
+            background: linear-gradient(
+                90deg,
+                var(--primary-color),
+                var(--secondary-color),
+                var(--accent-color),
+                var(--primary-color)
+            );
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 8s infinite linear;
+        }
+
+        .assessment-hero {
+            background: var(--gradient-1);
+            padding: 120px 2rem 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .assessment-hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+            animation: rotate 30s linear infinite;
+            opacity: 0.3;
+            top: -50%;
+            left: -50%;
+        }
+
+        .assessment-hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        .assessment-hero p {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 1s ease;
+        }
+
+        .fade-in-delay {
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        /* Enhanced Button Styles */
+        .next-btn, .prev-btn, .submit-btn {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            margin: 0.5rem;
+            min-width: 140px;
+        }
+
+        .next-btn, .submit-btn {
+            background: var(--gradient-2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .prev-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .next-btn::before, .prev-btn::before, .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .next-btn:hover::before, .prev-btn:hover::before, .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .next-btn:hover, .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .prev-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.2);
+            text-decoration: underline;
+        }
+
+        /* Button Container for better layout */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        /* Enhanced Question Slide Styling */
+        .question-slide {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .question-slide h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .question-slide p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Enhanced Rating Container */
+        .rating-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Enhanced Checkbox Group */
+        .checkbox-group {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .checkbox-group label:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(10px);
+        }
+
+        /* Enhanced Select Styling */
+        .grade-select {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+        }
+
+        .grade-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+
+        .grade-select option {
+            background: var(--darker-bg);
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-container">
+        <nav class="navbar">
+            <div class="logo">TechLab NZ</div>
+            <div class="nav-links">
+                <a href="index.html#home" class="nav-link">Home</a>
+                <a href="./portfolio.html" class="nav-link">What We Do</a>
+                <a href="diagnostic.html" class="nav-link active">Free Diagnostic</a>
+                <a href="course-catalog.html" class="nav-link">Course</a>
+                <a href="index.html#resources" class="nav-link">Free Resources</a>
+                <a href="index.html#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="auth-buttons">
+                <a href="./auth.html" class="sign-in-btn">Sign In</a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Diagnostic Page -->
+    <div id="diagnosticPage" class="page" style="display: block; opacity: 1;">
+        <section class="assessment-hero">
+            <h1 class="premium-text fade-in">TechLab Diagnostic</h1>
+            <p class="fade-in-delay">Let's identify your strengths and areas for improvement</p>
+        </section>
+
+        <div class="assessment-container">
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress"></div>
+                <div class="steps">
+                    <div class="step active">1</div>
+                    <div class="step">2</div>
+                    <div class="step">3</div>
+                    <div class="step">4</div>
+                </div>
+            </div>
+
+            <!-- Survey Form -->
+            <form id="assessmentForm" class="assessment-form">
+                <!-- Written Text Section -->
+                <div class="question-slide active">
+                    <h3>Career / Future</h3>
+                    <p>How confident are you in the choice of your own career in the future?</p>
+                    <div class="rating-container">
+                        <input type="range" min="1" max="5" class="slider" name="writtenText">
+                        <div class="rating-labels">
+                            <span>Not Confident</span>
+                            <span>Very Confident</span>
+                        </div>
+                    </div>
+                    <p>What specific aspects do you find challenging?</p>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="writtenText_challenges" value="analysis">Knowing what I am good at</label>
+                        <label><input type="checkbox" name="writtenText_challenges" value="structure">How to get there</label>
+                        <label><input type="checkbox" name="writtenText_challenges" value="quotes">Unsure in General</label>
+                    </div>
+                    <div class="button-container">
+                        <button type="button" class="next-btn">Next</button>
+                    </div>
+                </div>
+
+                <!-- Creative Writing Section -->
+                <div class="question-slide">
+                    <h3>Financial Literacy</h3>
+                    <p>Do you know the difference between a credit card and a debit card?</p>
+                    <div class="rating-container">
+                        <input type="range" min="1" max="5" class="slider" name="creativeWriting">
+                        <div class="rating-labels">
+                            <span>Not Confident</span>
+                            <span>Very Confident</span>
+                        </div>
+                    </div>
+                    <p>Select your main challenges:</p>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="creative_challenges" value="ideas">Never heard of it</label>
+                        <label><input type="checkbox" name="creative_challenges" value="techniques">Havent used it yet</label>
+                        <label><input type="checkbox" name="creative_challenges" value="vocabulary">Seen Parents Use it</label>
+                    </div>
+                    <div class="button-container">
+                        <button type="button" class="prev-btn">Previous</button>
+                        <button type="button" class="next-btn">Next</button>
+                    </div>
+                </div>
+
+                <!-- Unfamiliar Text Section -->
+                <div class="question-slide">
+                    <h3>Time Management</h3>
+                    <p>How comfortable are you with using calendar apps?</p>
+                    <div class="rating-container">
+                        <input type="range" min="1" max="5" class="slider" name="unfamiliarText">
+                        <div class="rating-labels">
+                            <span>Not Comfortable</span>
+                            <span>Very Comfortable</span>
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="unfamiliar_challenges" value="time">Prefer to use paper planner</label>
+                        <label><input type="checkbox" name="unfamiliar_challenges" value="comprehension">Used Google Calendar before</label>
+                        <label><input type="checkbox" name="unfamiliar_challenges" value="techniques">Manage time by using memory</label>
+                    </div>
+                    <div class="button-container">
+                        <button type="button" class="prev-btn">Previous</button>
+                        <button type="button" class="next-btn">Next</button>
+                    </div>
+                </div>
+
+                <!-- Final Section -->
+                <div class="question-slide">
+                    <h3>Overall Assessment</h3>
+                    <p>What are the areas you are most passionate about?</p>
+                    <select name="target_grade" class="grade-select">
+                        <option value="achieved">Career</option>
+                        <option value="merit">Leadership</option>
+                        <option value="excellence">Finance</option>
+                        <option value="excellence">Time Management</option>
+                    </select>
+                    <div class="button-container">
+                        <button type="button" class="prev-btn">Previous</button>
+                        <button type="button" class="submit-btn">Get Results</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Results Section -->
+            <div class="results-container hidden">
+                <canvas id="skillsChart"></canvas>
+                <div class="recommendations">
+                    <h3>Your Personalized Strengths Chart</h3>
+                    <div class="recommendation-cards">
+                        <!-- Cards will be added dynamically -->
+                    </div>
+                </div>
+            </div>
+            <div class="diagnostic-results" id="diagnosticResults" style="display: none;">
+                <h2>Your Personalized Strengths Chart</h2>
+                <div class="study-recommendations">
+                    <!-- Written Text Analysis -->
+                    <div class="recommendation-card">
+                        <div class="recommendation-header">
+                            <i class="fas fa-book"></i>
+                            <h3>Written Text Analysis</h3>
+                            <span class="priority-badge high">High Priority</span>
+                        </div>
+                        <p>Based on your responses, focus on improving text analysis skills.</p>
+                        <div class="recommended-modules">
+                            <!-- Free Preview Module -->
+                            <a href="course-catalog.html#module1" class="module-link" onclick="localStorage.setItem('openModule', 'module1')">
+                                <i class="fas fa-play-circle"></i>
+                                <div class="module-info">
+                                    <h4>Module 1: Careeer Exploration</h4>
+                                    <span>Free Preview Available</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            
+                            <!-- Premium Module -->
+                            <a href="course-catalog.html#module2" class="module-link premium" onclick="localStorage.setItem('openModule', 'module2')">
+                                <i class="fas fa-star"></i>
+                                <div class="module-info">
+                                    <h4>Module 2: Finance and Budgeting</h4>
+                                    <span>Enter passcode to unlock</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Essay Writing -->
+                    <div class="recommendation-card">
+                        <div class="recommendation-header">
+                            <i class="fas fa-pen-fancy"></i>
+                            <h3>Time Management Masterclass</h3>
+                            <span class="priority-badge medium">Medium Priority</span>
+                        </div>
+                        <p>Enhance your essay writing techniques for better results.</p>
+                        <div class="recommended-modules">
+                            <a href="course-catalog.html#module4" class="module-link premium" onclick="localStorage.setItem('openModule', 'module4')">
+                                <i class="fas fa-star"></i>
+                                <div class="module-info">
+                                    <h4>Module 4: Leadership and Teamwork</h4>
+                                    <span>Enter passcode to unlock</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Exam Preparation -->
+                    <div class="recommendation-card">
+                        <div class="recommendation-header">
+                            <i class="fas fa-tasks"></i>
+                            <h3>Exam Techniques</h3>
+                            <span class="priority-badge">Recommended</span>
+                        </div>
+                        <p>Master exam strategies for better performance.</p>
+                        <div class="recommended-modules">
+                            <a href="course-catalog.html#module5" class="module-link premium" onclick="localStorage.setItem('openModule', 'module5')">
+                                <i class="fas fa-star"></i>
+                                <div class="module-info">
+                                    <h4>Module 5: Exam Success Strategies</h4>
+                                    <span>Enter passcode to unlock</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="diagnostic.js"></script>
+</body>
+</html>

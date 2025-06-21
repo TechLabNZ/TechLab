@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+
+    <!-- Navigation -->
+    <div class="nav-container">
+        <nav class="navbar">
+            <div class="logo">TechLab NZ</div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="./portfolio.html" class="nav-link">What We Do</a>
+                <a href="./diagnostic.html" class="nav-link">Free Diagnostic</a>
+                <a href="./course-catalog.html" class="nav-link" onclick="window.location.href='course-catalog.html'; return false;">Course</a>
+                <a href="#resources" class="nav-link">Free Resources</a>
+                <a href="#contact" class="nav-link">Contact</a>
+        </div>
+            <div class="auth-buttons">
+                <a href="./auth.html" class="sign-in-btn" onclick="window.location.href='auth.html'">Sign In</a>
+    </div>
+        </nav>
+    </div>
+    <!-- Home Page -->
+    <div id="homePage" class="page active">
+            <div id="home"></div>
+        <section class="hero">
+            <div class="hero-content">
+                    <h1 class="hero-title premium-text">Prepare for the Future Now</h1>
+                    <p class="hero-subtitle">Free program aiming at maximizing student engagement
+                        with minimal teacher input. 
+                    </p>
+                <div class="cta-buttons">
+                        <a href="./portfolio.html" class="cta-button primary-btn">What We Do</a>
+                    <a href="./diagnostic.html" class="cta-button secondary-btn">Free Diagnostic</a>
+            </div>
+            </div>
+        </section>
+
+        <!-- Features Section (Black Background) -->
+        <section class="features-section">
+            <div class="features-grid">
+                <div class="feature-card premium-card glass-effect">
+                    <i class="fas fa-trophy feature-icon"></i>
+                        <h3>Life Skills for the future</h3>
+                        <p>Be Ready for High School and Beyond</p>
+                    </div>
+                <div class="feature-card premium-card glass-effect">
+                    <i class="fas fa-brain feature-icon"></i>
+                        <h3>Experienced Team</h3>
+                        <p>Learn from experienced course specialists</p>
+                </div>
+                <div class="feature-card premium-card glass-effect">
+                    <i class="fas fa-chart-line feature-icon"></i>
+                    <h3>Track Progress</h3>
+                        <p>Monitor your improvement through the modules</p>
+            </div>
+                <div class="feature-card premium-card glass-effect">
+                    <i class="fas fa-clock feature-icon"></i>
+                    <h3>Flexible Learning</h3>
+                    <p>Study at your own pace, anywhere, anytime</p>
+        </div>
+    </div>
+        </section>
+    
+            
+    <!-- Social Links -->
+    <div class="social-links">
+        <a href="https://www.youtube.com/@gavinwuofficial" class="social-link" target="_blank">
+            <i class="fab fa-youtube"></i>
+        </a>
+        <a href="#" class="social-link">
+            <i class="fab fa-twitter"></i>
+        </a>
+        <a href="#" class="social-link">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="#" class="social-link">
+            <i class="fab fa-github"></i>
+        </a>
+    </div>
+
+
+        <!-- Keep your existing testimonials section here -->
+        <section class="testimonials-section">
+            <!-- ... existing testimonials content ... -->
+        </section>
+    </div>
+
+    
+
+
+    
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                // Only handle hash navigation for internal links
+                if (link.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    const pageId = link.getAttribute('href').replace('#', '') + 'Page';
+                    showPage(pageId);
+                    
+                    // Always scroll to top when navigating to home
+                    if (link.getAttribute('href') === '#home') {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+                // External links (like course-catalog.html) will work normally
+            });
+        });
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Convert 'course' to 'coursePage' if needed
+            const targetId = pageId.endsWith('Page') ? pageId : pageId + 'Page';
+            const targetPage = document.getElementById(targetId);
+            
+            if (targetPage) {
+                targetPage.classList.add('active');
+                // Always scroll to top when showing a page
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Add to your existing JavaScript
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Handle navigating to a specific page based on the URL hash
+            if (window.location.hash) {
+                const pageId = window.location.hash.substring(1) + 'Page';
+                showPage(pageId);
+            }
+
+            // Access form submission
+            const accessForm = document.getElementById('accessForm');
+            const accessOverlay = document.getElementById('accessOverlay');
+
+            // Check if user has already registered
+            if (localStorage.getItem('userRegistered')) {
+                accessOverlay.style.display = 'none';
+            }
+
+            accessForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = e.target.querySelector('.access-submit-btn');
+                submitBtn.classList.add('loading');
+
+                // Collect form data
+                const formData = {
+                    userType: document.getElementById('userType').value,
+                    email: document.getElementById('email').value,
+                    yearLevel: document.getElementById('yearLevel').value,
+                    timestamp: new Date().toISOString()
+                };
+
+                try {
+                    // Simulate API call (replace with your actual API endpoint)
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // Store user data
+                    localStorage.setItem('userRegistered', 'true');
+                    localStorage.setItem('userData', JSON.stringify(formData));
+
+                    // Hide overlay with animation
+                    accessOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        accessOverlay.style.display = 'none';
+                    }, 500);
+
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    alert('There was an error processing your registration. Please try again.');
+                } finally {
+                    submitBtn.classList.remove('loading');
+                }
+            });
+
+            // Resources form
+            const resourcesAccessForm = document.getElementById('resourcesAccessForm');
+            const resourcesAccessOverlay = document.getElementById('resourcesAccessOverlay');
+            const resourcesContent = document.querySelector('.resources-content');
+
+            // Only show overlay on resources page if not registered
+            function checkResourcesAccess() {
+                if (window.location.hash === '#resources') {
+                    if (!localStorage.getItem('resourcesRegistered')) {
+                        resourcesAccessOverlay.style.display = 'flex';
+                        resourcesContent.style.display = 'none';
+                    } else {
+                        resourcesAccessOverlay.style.display = 'none';
+                        resourcesContent.style.display = 'block';
+                    }
+                }
+            }
+
+            // Check access when page loads and when hash changes
+            window.addEventListener('hashchange', checkResourcesAccess);
+            checkResourcesAccess();
+
+            // Handle form submission
+            if(resourcesAccessForm) {
+                resourcesAccessForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const submitBtn = e.target.querySelector('.access-submit-btn');
+                    submitBtn.classList.add('loading');
+
+                    const formData = {
+                        userType: document.getElementById('userType').value,
+                        email: document.getElementById('email').value,
+                        yearLevel: document.getElementById('yearLevel').value,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    try {
+                        // Simulate API call
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        
+                        // Store registration
+                        localStorage.setItem('resourcesRegistered', 'true');
+                        localStorage.setItem('resourcesUserData', JSON.stringify(formData));
+
+                        // Show resources content
+                        resourcesAccessOverlay.style.opacity = '0';
+                        setTimeout(() => {
+                            resourcesAccessOverlay.style.display = 'none';
+                            resourcesContent.style.display = 'block';
+                            resourcesContent.style.animation = 'fadeIn 0.5s ease forwards';
+                        }, 500);
+
+                    } catch (error) {
+                        console.error('Registration error:', error);
+                        alert('There was an error processing your registration. Please try again.');
+                    } finally {
+                        submitBtn.classList.remove('loading');
+                    }
+                });
+            }
+
+            // Track resource downloads
+            document.querySelectorAll('.resource-item[download]').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const resourceName = item.getAttribute('download');
+                    const userData = JSON.parse(localStorage.getItem('resourcesUserData') || '{}');
+                    
+                    // Log download (you can send this to your server)
+                    const downloadLog = {
+                        resource: resourceName,
+                        user: userData.email,
+                        userType: userData.userType,
+                        yearLevel: userData.yearLevel,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    console.log('Resource downloaded:', downloadLog);
+                    
+                    // Store download history in localStorage
+                    const downloadHistory = JSON.parse(localStorage.getItem('downloadHistory') || '[]');
+                    downloadHistory.push(downloadLog);
+                    localStorage.setItem('downloadHistory', JSON.stringify(downloadHistory));
+                });
+            });
+
+            // Slider value indicator
+            document.querySelectorAll('.slider').forEach(slider => {
+                // Create value indicator
+                const valueIndicator = document.createElement('div');
+                valueIndicator.className = 'rating-value';
+                slider.parentElement.appendChild(valueIndicator);
+
+                // Update value indicator
+                function updateValue() {
+                    valueIndicator.textContent = slider.value;
+                    valueIndicator.style.opacity = '1';
+                    valueIndicator.style.left = `${(slider.value - slider.min) / (slider.max - slider.min) * 100}%`;
+                }
+
+                slider.addEventListener('input', updateValue);
+                slider.addEventListener('change', () => {
+                    setTimeout(() => {
+                        valueIndicator.style.opacity = '0';
+                    }, 1000);
+                });
+            });
+
+            // Course Platform scripts
+            // Module Toggle
+            document.querySelectorAll('.module-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const moduleItem = header.parentElement;
+                    const icon = header.querySelector('i');
+                    moduleItem.classList.toggle('active');
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-right');
+                });
+            });
+
+            // Tab Switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    btn.classList.add('active');
+                    const tabContent = document.getElementById(btn.dataset.tab);
+                    if(tabContent) {
+                        tabContent.classList.add('active');
+                    }
+                });
+            });
+
+            // Flashcard Flipping
+            document.querySelectorAll('.flashcard').forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('flipped');
+                });
+            });
+
+            // Quiz Functionality
+            document.querySelectorAll('.submit-answer').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selected = btn.parentElement.querySelector('input:checked');
+                    if (selected) {
+                        // Add your quiz logic here
+                        console.log('Answer submitted:', selected.nextElementSibling.textContent);
+                    }
+                });
+            });
+
+            // Stripe Payment
+            // const stripe = Stripe('your_publishable_key'); // Replace with your Stripe publishable key
+            
+            // // Check if user has active subscription
+            // const hasSubscription = localStorage.getItem('courseSubscription');
+            // if (hasSubscription) {
+            //     document.getElementById('paymentOverlay').style.display = 'none';
+            //     document.querySelector('.course-container').style.display = 'grid';
+            // }
+
+            // Handle payment button clicks
+            document.querySelectorAll('.payment-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const plan = btn.dataset.plan;
+                    try {
+                        // Show loading state
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                        // Create checkout session (replace with your backend endpoint)
+                        const response = await fetch('/create-checkout-session', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                plan: plan
+                            })
+                        });
+
+                        const session = await response.json();
+
+                        // Redirect to Stripe Checkout
+                        const result = await stripe.redirectToCheckout({
+                            sessionId: session.id
+                        });
+
+                        if (result.error) {
+                            throw new Error(result.error.message);
+                        }
+
+                    } catch (error) {
+                        console.error('Payment error:', error);
+                        alert('There was an error processing your payment. Please try again.');
+                        btn.disabled = false;
+                        btn.innerHTML = plan === 'monthly' ? 'Select Monthly Plan' : 'Select Annual Plan';
+                    }
+                });
+            });
+
+            // Parallax Effect
+            window.addEventListener('scroll', () => {
+                const parallaxElements = document.querySelectorAll('[data-parallax="scroll"]');
+                parallaxElements.forEach(element => {
+                    const speed = 0.5;
+                    const offset = window.pageYOffset;
+                    element.style.backgroundPositionY = `${offset * speed}px`;
+                });
+            });
+
+            // Testimonials Slider
+            let currentTestimonial = 0;
+            const testimonials = document.querySelectorAll('.testimonial');
+            
+            function showTestimonial(index) {
+                if (testimonials.length > 0) {
+                testimonials.forEach(t => t.style.display = 'none');
+                testimonials[index].style.display = 'block';
+                }
+            }
+
+            if (testimonials.length > 0) {
+            setInterval(() => {
+                currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+                showTestimonial(currentTestimonial);
+            }, 5000);
+            }
+
+            // Enhanced Intersection Observer
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        if (entry.target.classList.contains('feature-card')) {
+                            entry.target.classList.add('slide-in');
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements
+            document.querySelectorAll('.gallery-item, .feature-card, .testimonial').forEach((el) => {
+                observer.observe(el);
+            });
+
+            // Filter functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.dataset.filter;
+                    document.querySelectorAll('.gallery-item').forEach(item => {
+                        if (category === 'all' || item.dataset.category === category) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                });
+            });
+        });
+
+            // Scroll reveal observer
+            const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+            document.querySelectorAll('.scroll-reveal').forEach(el => scrollObserver.observe(el));
+
+        // Assessment functionality
+            const diagnosticForm = document.getElementById('assessmentForm');
+            if (diagnosticForm) {
+            const slides = document.querySelectorAll('.question-slide');
+            let currentSlide = 0;
+
+            // Navigation buttons
+            document.querySelectorAll('.next-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                        if(slides.length > 0) {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide++;
+                    slides[currentSlide].classList.add('active');
+                    updateProgress();
+                        }
+                });
+            });
+
+            document.querySelectorAll('.prev-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                         if(slides.length > 0) {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide--;
+                    slides[currentSlide].classList.add('active');
+                    updateProgress();
+                        }
+                });
+            });
+
+                const submitBtn = document.querySelector('.submit-btn');
+                if (submitBtn) {
+                    submitBtn.addEventListener('click', () => {
+                showResults();
+            });
+                }
+            
+
+            function updateProgress() {
+                const progress = document.querySelector('.progress');
+                    if(progress) {
+                const percentage = (currentSlide / (slides.length - 1)) * 100;
+                progress.style.width = `${percentage}%`;
+                    }
+
+                document.querySelectorAll('.step').forEach((step, index) => {
+                    if (index <= currentSlide) {
+                        step.classList.add('active');
+                    } else {
+                        step.classList.remove('active');
+                    }
+                });
+            }
+
+            function showResults() {
+                // Hide the form
+                const form = document.getElementById('assessmentForm');
+                form.style.display = 'none';
+                
+                // Show results container
+                const resultsContainer = document.querySelector('.results-container');
+                resultsContainer.classList.remove('hidden');
+                resultsContainer.style.display = 'block';
+
+                // Get the canvas context
+                const ctx = document.getElementById('skillsChart');
+                
+                // Destroy existing chart if it exists
+                if (window.myChart) {
+                    window.myChart.destroy();
+                }
+
+                // Create new chart
+                window.myChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Written Text', 'Creative Writing', 'Unfamiliar Text', 'Essay Structure', 'Analysis'],
+                        datasets: [{
+                            label: 'Your Current Level',
+                            data: getFormData(),
+                            backgroundColor: 'rgba(124, 58, 237, 0.2)',
+                            borderColor: '#7C3AED',
+                            pointBackgroundColor: '#7C3AED',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#7C3AED',
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#fff',
+                                    font: {
+                                        size: 14,
+                                        family: "'Poppins', sans-serif"
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                min: 0,
+                                max: 5,
+                                beginAtZero: true,
+                                angleLines: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                pointLabels: {
+                                    color: '#fff',
+                                    font: {
+                                        size: 14,
+                                        family: "'Poppins', sans-serif"
+                                    }
+                                },
+                                ticks: {
+                                    stepSize: 1,
+                                    backdropColor: 'transparent',
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            }
+                        },
+                        elements: {
+                            line: {
+                                tension: 0.4
+                            }
+                        },
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeInOutQuart'
+                        }
+                    }
+                });
+
+                // Generate recommendations with delay for animation
+                setTimeout(() => {
+                    generateRecommendations();
+                }, 500);
+                }
+            }
+
+            function getFormData() {
+                const writtenText = document.querySelector('input[name="writtenText"]').value || 3;
+                const creativeWriting = document.querySelector('input[name="creativeWriting"]').value || 3;
+                const unfamiliarText = document.querySelector('input[name="unfamiliarText"]').value || 3;
+                
+                return [
+                    parseInt(writtenText),
+                    parseInt(creativeWriting),
+                    parseInt(unfamiliarText),
+                    4, // Example static value for Essay Structure
+                    3  // Example static value for Analysis
+                ];
+            }
+
+            function generateRecommendations() {
+                const recommendations = [
+                    {
+                        title: 'Written Text Analysis',
+                        description: 'Master the art of analyzing written texts with our comprehensive guide.',
+                        course: 'Writing Mastery Course',
+                        icon: 'fa-book-open',
+                        color: '#7C3AED' // Purple
+                    },
+                    {
+                        title: 'Creative Writing',
+                        description: 'Develop your creative writing skills with structured techniques and exercises.',
+                        course: 'Crafted Writing Course',
+                        icon: 'fa-pen-fancy',
+                        color: '#3B82F6' // Blue
+                    },
+                    {
+                        title: 'Unfamiliar Text',
+                        description: 'Build confidence in analyzing unseen texts with proven strategies.',
+                        course: 'Comprehensive Unfamiliar Course',
+                        icon: 'fa-glasses',
+                        color: '#F59E0B' // Orange
+                    }
+                ];
+
+                const container = document.querySelector('.recommendation-cards');
+                if(container) {
+                container.innerHTML = ''; // Clear existing cards
+                
+                recommendations.forEach((rec, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'recommendation-card glass-effect';
+                    card.style.animationDelay = `${index * 0.2}s`;
+                    card.innerHTML = `
+                        <div class="rec-icon" style="color: ${rec.color}">
+                            <i class="fas ${rec.icon}"></i>
+                        </div>
+                        <h4>${rec.title}</h4>
+                        <p>${rec.description}</p>
+                        <a href="#course" class="rec-course-btn" style="background: linear-gradient(135deg, ${rec.color}, ${adjustColor(rec.color, -20)})">
+                            <span>Explore ${rec.course}</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    `;
+                    container.appendChild(card);
+
+                    // Add click event to navigate to courses
+                    card.querySelector('.rec-course-btn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showPage('coursePage');
+                    });
+                });
+                }
+            }
+
+            // Helper function to darken/lighten colors
+            function adjustColor(color, amount) {
+                let usePound = false;
+                if (color[0] == "#") {
+                    color = color.slice(1);
+                    usePound = true;
+                }
+                const num = parseInt(color, 16);
+                let r = (num >> 16) + amount;
+                if (r > 255) r = 255;
+                else if  (r < 0) r = 0;
+                let b = ((num >> 8) & 0x00FF) + amount;
+                if (b > 255) b = 255;
+                else if  (b < 0) b = 0;
+                let g = (num & 0x0000FF) + amount;
+                if (g > 255) g = 255;
+                else if (g < 0) g = 0;
+                return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+            }
+
+        // Add this to your existing JavaScript
+        document.querySelectorAll('.next-btn, .prev-btn, .submit-btn').forEach(button => {
+            button.addEventListener('mouseover', (e) => {
+                const x = e.pageX - button.offsetLeft;
+                const y = e.pageY - button.offsetTop;
+                
+                button.style.setProperty('--xPos', x + 'px');
+                button.style.setProperty('--yPos', y + 'px');
+            });
+        });
+
+            // Course passwords
+            const passwords = {
+                'english3': 'ncea2024',
+                'calc3': 'math2024'
+            };
+
+            // Handle unlock button clicks
+            document.querySelectorAll('.unlock-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const courseId = btn.dataset.course;
+                    const content = document.getElementById(`${courseId}-content`);
+                    if(content) {
+                    const passwordForm = content.querySelector('.password-form');
+                    passwordForm.style.display = 'flex';
+                    
+                    // Add visual feedback
+                    btn.innerHTML = '<i class="fas fa-unlock"></i> Enter Code';
+                    btn.classList.add('active');
+                    }
+                });
+            });
+
+            // Handle password submission with Enter key
+            document.querySelectorAll('.password-input').forEach(input => {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        input.nextElementSibling.click();
+                    }
+                });
+            });
+
+            // Handle password submission
+            document.querySelectorAll('.submit-password').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const courseContent = e.target.closest('.course-content');
+                    if(courseContent) {
+                    const courseId = courseContent.id.replace('-content', '');
+                    const passwordInput = courseContent.querySelector('.password-input');
+                    const unlockBtn = courseContent.parentElement.querySelector('.unlock-btn');
+                    
+                    if (passwordInput.value === passwords[courseId]) {
+                        // Correct password
+                        courseContent.querySelector('.password-form').style.display = 'none';
+                        courseContent.querySelector('.content-wrapper').classList.remove('hidden');
+                        
+                        // Update unlock button
+                        unlockBtn.innerHTML = '<i class="fas fa-unlock"></i> Unlocked';
+                        unlockBtn.classList.add('unlocked');
+                        unlockBtn.disabled = true;
+                        
+                        // Store in session storage
+                        sessionStorage.setItem(`course_${courseId}_unlocked`, 'true');
+                        
+                        // Success animation
+                        courseContent.style.animation = 'unlockSuccess 0.5s ease forwards';
+                    } else {
+                        // Wrong password
+                        passwordInput.style.animation = 'shake 0.5s ease';
+                        passwordInput.classList.add('error');
+                        
+                        // Show error message
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'password-error';
+                        errorMsg.textContent = 'Incorrect password. Please try again.';
+                        passwordInput.parentElement.appendChild(errorMsg);
+                        
+                        setTimeout(() => {
+                            passwordInput.style.animation = '';
+                            passwordInput.classList.remove('error');
+                            errorMsg.remove();
+                        }, 2000);
+                        }
+                    }
+                });
+            });
+
+            // Check for previously unlocked courses
+            Object.keys(passwords).forEach(courseId => {
+                if (sessionStorage.getItem(`course_${courseId}_unlocked`) === 'true') {
+                    const content = document.getElementById(`${courseId}-content`);
+                    if(content) {
+                    const unlockBtn = content.parentElement.querySelector('.unlock-btn');
+                    
+                    content.querySelector('.password-form').style.display = 'none';
+                    content.querySelector('.content-wrapper').classList.remove('hidden');
+                    unlockBtn.innerHTML = '<i class="fas fa-unlock"></i> Unlocked';
+                    unlockBtn.classList.add('unlocked');
+                    unlockBtn.disabled = true;
+                }
+                }
+            });
+
+        });
+
+        function navigateToModule(moduleId) {
+            window.location.href = `course-catalog.html#${moduleId}`;
+        }
+    </script>
+
+    <!-- Add this footer section to all pages -->
+    <footer class="common-footer">
+        <div class="expertise-grid">
+            <div class="expertise-item">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>NCEA Excellence</h3>
+                <p>Specialized guidance for achieving Merit and Excellence grades</p>
+            </div>
+            <div class="expertise-item">
+                <i class="fas fa-brain"></i>
+                <h3>Personalized Learning</h3>
+                <p>Tailored approaches to match your learning style</p>
+            </div>
+            <div class="expertise-item">
+                <i class="fas fa-chart-line"></i>
+                <h3>Proven Results</h3>
+                <p>Consistent improvement in student performance</p>
+            </div>
+            <div class="expertise-item">
+                <i class="fas fa-clock"></i>
+                <h3>Flexible Schedule</h3>
+                <p>Sessions that fit your timetable</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Enhanced Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="testimonials-container">
+            <h2>Student Success Stories</h2>
+            <div class="testimonial-card glass-effect">
+                <p class="testimonial-text">"The personalized attention and structured approach helped me achieve Excellence in Level 3 Calculus."</p>
+                <cite class="testimonial-author">- NCEA Level 3 Student</cite>
+            </div>
+            <div class="testimonial-card glass-effect">
+                <p class="testimonial-text">"I went from Achieved to Merit in Physics thanks to the clear explanations and practice questions."</p>
+                <cite class="testimonial-author">- NCEA Level 2 Student</cite>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

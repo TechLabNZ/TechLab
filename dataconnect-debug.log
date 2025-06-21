@@ -1,0 +1,12 @@
+I0201 16:59:25.395289   15897 load.go:37] Reloading schema and connectors...
+I0201 16:59:25.421403   15897 control.go:59] [/emulator/websiteapp 2dfb] UpdateResources(): done
+Schema: sources: schema/schema.gql [1384B] 
+Connector "default": sources: connector/mutations.gql [1163B] connector/queries.gql [1855B] 
+I0201 16:59:25.435963   15897 collector.go:107] schema extensions wrote into "/Users/gavinwu/Library/CloudStorage/OneDrive-TakapunaGrammarSchool/30-39 School Subjects/36 Coding/Website Development/Website App/dataconnect/.dataconnect/schema"
+Generated sources: prelude.gql [65151B] 
+I0201 16:59:25.436056   15897 load.go:115] Finished reloading
+I0201 16:59:25.439156   15897 dev.go:95] Listening on address (HTTP + gRPC): 127.0.0.1:9399
+I0201 16:59:25.440166   15897 dev.go:95] Listening on address (HTTP + gRPC): [::1]:9399
+I0201 16:59:31.320933   15897 control.go:59] [/emulator/websiteapp cbee] UpdateResources(): done
+Schema: sources: schema/schema.gql [1384B] 
+Connector "default": sources: connector/queries.gql [1855B] connector/mutations.gql [1163B] 

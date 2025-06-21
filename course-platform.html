@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NCEA Excellence Learning Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        /* Your existing root variables */
+        :root {
+            --primary-color: #7C3AED;
+            --secondary-color: #3B82F6;
+            --accent-color: #F59E0B;
+            --dark-bg: #0F172A;
+            --darker-bg: #020617;
+            --light-bg: #1E293B;
+            --text-color: #F8FAFC;
+            --text-muted: #94A3B8;
+            --success-color: #10B981;
+            --error-color: #EF4444;
+        }
+
+        /* Platform-specific styles */
+        .platform-header {
+            background: var(--darker-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        .platform-logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Course Navigation */
+        .platform-nav {
+            position: fixed;
+            left: 0;
+            top: 64px;
+            width: 280px;
+            height: calc(100vh - 64px);
+            background: var(--dark-bg);
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .course-sections {
+            margin-top: 2rem;
+        }
+
+        .section-item {
+            margin-bottom: 1rem;
+        }
+
+        .section-header {
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-content {
+            margin-left: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .lesson-item {
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lesson-item:hover {
+            background: var(--light-bg);
+        }
+
+        .lesson-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .lesson-item.completed {
+            color: var(--success-color);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 64px;
+            padding: 2rem;
+        }
+
+        .content-viewer {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: black;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .content-info {
+            padding: 2rem;
+            background: var(--light-bg);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        /* Lock Overlay */
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .lock-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--light-bg);
+            margin: 2rem 0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        /* Notes and Resources */
+        .content-extras {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+        }
+
+        .notes-section {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 15px;
+        }
+
+        .resources-sidebar {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 15px;
+        }
+
+        /* Add to your existing styles */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .lesson-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .quiz-section {
+            background: var(--light-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-indicator {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .quiz-question {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .question-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .question-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .question-number {
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 600;
+        }
+
+        .question-content {
+            padding: 0 1.5rem 1.5rem;
+            display: none;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .option-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .option-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .option-text {
+            flex: 1;
+            margin-right: 2rem;
+        }
+
+        .checkmark {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .option-card input[type="radio"]:checked + .option-text + .checkmark {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+        }
+
+        .option-card input[type="radio"]:checked + .option-text + .checkmark::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .question-content.active {
+            display: block;
+            animation: slideDown 0.3s ease forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="platform-header">
+        <div class="platform-logo">NCEA Excellence</div>
+        <div class="user-menu">
+            <div class="user-avatar">JS</div>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </header>
+
+    <nav class="platform-nav">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 35%"></div>
+        </div>
+        <div class="course-sections">
+            <div class="section-item">
+                <div class="section-header">
+                    <span>1. Introduction</span>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="section-content">
+                    <div class="lesson-item completed">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Course Overview</span>
+                    </div>
+                    <div class="lesson-item completed">
+                        <i class="fas fa-book"></i>
+                        <span>Getting Started</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-item">
+                <div class="section-header">
+                    <span>2. Written Text Analysis</span>
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="section-content">
+                    <div class="lesson-item locked">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Understanding Author's Purpose</span>
+                    </div>
+                    <div class="lesson-item locked">
+                        <i class="fas fa-tasks"></i>
+                        <span>Practice Exercise</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="content-viewer">
+            <div class="video-container">
+                <iframe 
+                    src="https://www.youtube.com/embed/KHIsM8_d0VU" 
+                    title="NCEA Excellence Tutorial"
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen
+                    class="lesson-video">
+                </iframe>
+            </div>
+
+            <!-- Interactive Quiz Section -->
+            <div class="quiz-section">
+                <div class="quiz-header">
+                    <h2>Knowledge Check</h2>
+                    <span class="progress-indicator">0/5 Complete</span>
+                </div>
+
+                <div class="quiz-container">
+                    <!-- Question 1 -->
+                    <div class="quiz-question">
+                        <div class="question-header" onclick="toggleQuestion(0)">
+                            <span class="question-number">01</span>
+                            <h3>Understanding Main Ideas</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="question-content">
+                            <p>What is the primary purpose of text analysis?</p>
+                            <div class="options-grid">
+                                <label class="option-card">
+                                    <input type="radio" name="q1" value="a">
+                                    <span class="option-text">To identify grammar mistakes</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q1" value="b">
+                                    <span class="option-text">To understand deeper meaning</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q1" value="c">
+                                    <span class="option-text">To count words</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q1" value="d">
+                                    <span class="option-text">To improve handwriting</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add more questions similarly -->
+                </div>
+            </div>
+
+            <div class="content-info">
+                <h1>Understanding Author's Purpose</h1>
+                <p>Learn how to analyze and understand the author's intended message and techniques.</p>
+            </div>
+
+            <div class="content-extras">
+                <div class="notes-section">
+                    <h2>Lesson Notes</h2>
+                    <!-- Notes content -->
+                </div>
+                <div class="resources-sidebar">
+                    <h2>Resources</h2>
+                    <!-- Resources list -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    function toggleQuestion(index) {
+        const questions = document.querySelectorAll('.quiz-question');
+        const content = questions[index].querySelector('.question-content');
+        const icon = questions[index].querySelector('.question-header i');
+        
+        content.classList.toggle('active');
+        icon.classList.toggle('fa-chevron-up');
+        icon.classList.toggle('fa-chevron-down');
+    }
+
+    // Track quiz progress
+    document.querySelectorAll('.option-card input').forEach(input => {
+        input.addEventListener('change', updateProgress);
+    });
+
+    function updateProgress() {
+        const total = document.querySelectorAll('.quiz-question').length;
+        const answered = document.querySelectorAll('.option-card input:checked').length;
+        document.querySelector('.progress-indicator').textContent = `${answered}/${total} Complete`;
+    }
+    </script>
+</body>
+</html> 
